@@ -116,6 +116,8 @@ func (user *User) FindAllUsers(db *gorm.DB) (*[]User, error) {
 	return &users, err
 }
 
+// FUnction FindUserByID queries for a user using a specific ID from the users column
+// TODO: Figure out the GORM error handling method incase you
 func (user *User) FindUserByID(db *gorm.DB, uid uint32) (*User, error) {
 	var err error
 	err = db.Debug().Model(User{}).Where("id = ?", uid).Take(&user).Error
@@ -123,14 +125,15 @@ func (user *User) FindUserByID(db *gorm.DB, uid uint32) (*User, error) {
 		return &User{}, err
 	}
 
-	// ! Should be fixed
-	// if gorm.IsRecordNotFoundError(err) {
-	// 	return &User{}, errors.New("User not found")
-	// }
+	//TODO: Find an error handling method to ensure that the ID actually exist
+	//if gorm.ErrInvalidValue(err) {
+	//	return &User{}, errors.New("User not found")
+	//}
 
 	return user, err
 }
 
+// Function UpdateUser bring up to date a User info
 func (user *User) UpdateUser(db *gorm.DB, uid uint32) (*User, error) {
 	err := user.BeforeSave()
 	if err != nil {
@@ -157,6 +160,7 @@ func (user *User) UpdateUser(db *gorm.DB, uid uint32) (*User, error) {
 	return user, nil
 }
 
+// Function DeleteUser drops a user from the User table and returns the affected row
 func (user *User) DeleteUser(db *gorm.DB, uid uint32) (int64, error) {
 	db = db.Debug().Model(&User{}).Where("id = ?", uid).Take(&User{}).Delete(&User{})
 
