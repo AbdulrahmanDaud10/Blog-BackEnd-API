@@ -28,6 +28,7 @@ func (post *Post) Prepare() {
 	post.UpdatedAt = time.Now()
 }
 
+// Function ValidatePost ensures the correct info is what is provided
 func (post *Post) ValidatePost() error {
 	if post.Title == "" {
 		return errors.New("Title required")
@@ -42,6 +43,7 @@ func (post *Post) ValidatePost() error {
 	return nil
 }
 
+// Function SavePost stores a post to the BD
 func (post *Post) SavePost(db *gorm.DB) (*Post, error) {
 	var err error
 	err = db.Debug().Model(&Post{}).Create(&post).Error
@@ -59,6 +61,7 @@ func (post *Post) SavePost(db *gorm.DB) (*Post, error) {
 	return post, nil
 }
 
+// Function FindAllPosts querries through the post table to return all the posts that were created
 func (post *Post) FIndAllPosts(db *gorm.DB) (*[]Post, error) {
 	var err error
 	posts := []Post{}
@@ -78,6 +81,7 @@ func (post *Post) FIndAllPosts(db *gorm.DB) (*[]Post, error) {
 	return &posts, nil
 }
 
+// Function FindPostByID querries through the table to locate a post and return the post
 func (post *Post) FIndPostByID(db gorm.DB, postid uint64) (*Post, error) {
 	var err error
 	err = db.Debug().Model(&Post{}).Where("id = ?", postid).Take(&post).Error
@@ -95,6 +99,7 @@ func (post *Post) FIndPostByID(db gorm.DB, postid uint64) (*Post, error) {
 	return post, nil
 }
 
+// FUnction UpdatePost modifies a post by querrying through the table using a specific ID and returns the updated post
 func (post *Post) UpdatePost(db gorm.DB) (*Post, error) {
 	var err error
 	err = db.Debug().Model(&Post{}).Where("id = ?", post.ID).Updates(Post{Title: post.Title, Content: post.Content, UpdatedAt: time.Now()}).Error
@@ -112,12 +117,13 @@ func (post *Post) UpdatePost(db gorm.DB) (*Post, error) {
 	return post, nil
 }
 
+// Function DeletePost drops a post after querying for a specific ID and the returning the rows affected by dropping the post
 func (post *Post) DeletePost(db gorm.DB, postid uint64, userid uint32) (int64, error) {
 	db = *db.Debug().Model(&Post{}).Where("id = ?", postid, userid).Take(&Post{}).Delete(&Post{})
 	if db.Error != nil {
-		if gorm.ErrRecordNotFound(db.Error) {
-			return 0, errors.New("Post Not Found")
-		}
+		// if gorm.ErrRecordNotFound(db.Error) {
+		// 	return 0, errors.New("Post Not Found")
+		// }
 		return 0, db.Error
 	}
 
