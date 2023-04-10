@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"html"
 	"log"
 	"strings"
 	"time"
@@ -40,6 +41,14 @@ func (user *User) BeforeSave() error {
 	user.Password = string(hashedPassword)
 
 	return nil
+}
+
+func (user *User) Prepare() {
+	user.ID = 0
+	user.UserName = html.EscapeString(strings.TrimSpace(user.UserName))
+	user.Email = html.EscapeString(strings.TrimSpace(user.Email))
+	user.CreatedAt = time.Now()
+	user.UpdatedAt = time.Now()
 }
 
 // Function Validate converts all the strings to lowercases and then verifies is not empty and prompts messages if the Users details are empty or in an invalid format
