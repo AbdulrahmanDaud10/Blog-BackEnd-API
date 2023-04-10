@@ -33,7 +33,7 @@ func (server *Server) IntializeDB(DBDriver, DBUser, DBPassword, DBPort, DBHost, 
 
 	server.Router = mux.NewRouter()
 
-	server.DB.InitializeRoutes()
+	server.initializeRoutes()
 }
 
 func (server *Server) Run(addr string) {
